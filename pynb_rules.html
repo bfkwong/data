@@ -1,0 +1,272 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>PYNB Parser Rules</title>
+</head>
+<body>
+<h1 id="markdown-parser-documentation">Markdown Parser Documentation</h1><div class="TOC">
+
+
+<ul>
+<li><a href="#markdown-parser-documentation">Markdown Parser Documentation</a>
+
+<ul>
+<li><a href="#i-chapter-layout">I. CHAPTER LAYOUT</a></li>
+<li><a href="#ii-equations">II. EQUATIONS</a>
+
+<ul>
+<li><a href="#equation-number">Equation Number</a></li>
+</ul></li>
+<li><a href="#iii-code-and-output">III. CODE AND OUTPUT</a>
+
+<ul>
+<li><a href="#code-blocks">Code Blocks</a></li>
+<li><a href="#output-blocks">Output Blocks</a>
+
+<ul>
+<li><a href="#images">IMAGES</a></li>
+<li><a href="#table-output">TABLE OUTPUT</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#iv-link-formatting">IV. LINK FORMATTING</a>
+
+<ul>
+<li><a href="#footnote">Footnote</a></li>
+<li><a href="#inline">Inline</a></li>
+</ul></li>
+<li><a href="#v-format-requirements-of-mistletoe">V. FORMAT REQUIREMENTS OF <code>Mistletoe</code></a></li>
+<li><a href="#vi-usage">VI. USAGE</a>
+
+<ul>
+<li><a href="#maintex">main.tex</a></li>
+<li><a href="#other-resources">Other Resources</a></li>
+<li><a href="#input-source">Input Source</a></li>
+<li><a href="#output">Output</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</div>
+
+<h2 id="i-chapter-layout">I. CHAPTER LAYOUT</h2>
+
+<p>Markdown header tags gets translated into chapter, section, and subsection tags in HTML. The direct translation rule is as follows </p>
+
+<ul>
+<li><code># Chapter 1</code> <span class="math">\(\rightarrow\)</span> <code>\chapter{Chapter 1} \label{ch}</code></li>
+<li><code>## Section 1</code> <span class="math">\(\rightarrow\)</span> <code>\section{Section 1} \label{ch}</code></li>
+<li><code>### Subsection 1</code> <span class="math">\(\rightarrow\)</span> <code>\subsection{Subsection 1} \label{ch}</code></li>
+</ul>
+
+<p>It is recommended that each chapter only has one <code>#</code> tag and each section has a <code>##</code> tag and each subsection has a <code>###</code> tag. A markdown example is shown below with its latex translation </p>
+
+<p><strong>MARKDOWN</strong></p>
+
+<pre><code># Hong Kong
+
+Hong Kong is a metropolitan area and special administrative region of the People's Republic of China in the eastern Pearl River Delta by the South China Sea. 
+
+## History
+
+The region is first known to have been occupied by humans during the Neolithic period, about 6,000 years ago.
+
+### British Occupation 
+
+Hong Kong Island was formally ceded to the United Kingdom in the 1842 Treaty of Nanking. The colony was further expanded in 1898, when Britain obtained a 99-year lease of the New Territories.
+
+</code></pre>
+
+<p><strong>LATEX TRANSLATION</strong></p>
+
+<pre><code>\chapter{Hong Kong} \label{ch}
+
+Hong Kong is a metropolitan area and special administrative region of the People's Republic of China in the eastern Pearl River Delta by the South China Sea. 
+
+\section{History} \label{ch}
+
+The region is first known to have been occupied by humans during the Neolithic period, about 6,000 years ago.
+
+\subsection{British Occupation} \label{ch}
+
+Hong Kong Island was formally ceded to the United Kingdom in the 1842 Treaty of Nanking. The colony was further expanded in 1898, when Britain obtained a 99-year lease of the New Territories.
+</code></pre>
+
+<h2 id="ii-equations">II. EQUATIONS</h2>
+
+<p>Equations in Markdown should be done with <code>\begin{align} ... \end{align}</code>. The parser is setup to recognize <code>align</code> but not <code>equation</code>. Additionally, equations should be wrapped in <code>$$</code> tags touching the <code>\begin{align}</code> and <code>\end{align}</code> tags. </p>
+
+<p><strong>EXAMPLE: Correct way to use align</strong></p>
+
+<pre><code>$$\begin{align}
+y = mx + b
+\end{align}$$
+</code></pre>
+
+<p><strong>EXAMPLE: WRONG way to use align</strong></p>
+
+<pre><code>$$
+\begin{align}
+y = mx + b
+\end{align}
+$$
+</code></pre>
+
+<h3 id="equation-number">Equation Number</h3>
+
+<p>Equation number in markdown should be down with the <code>label{name}\tag{1}</code> tag within <code>align</code>. The parser will automatically remove the <code>tag{1}</code> so that Latex can do the proper numbering. When referencing the equation, the <code>eqref</code> tag should be wrapped in <code>$</code>.</p>
+
+<p><strong>EXAMPLE</strong></p>
+
+<pre><code>$$\begin{align}
+y = mx + b
+\label{slope_int_form}\tag{1}
+\end{align}$$
+
+The slope intercept form $\eqref{1}$ defines a line using the slope of the line and the y intercept of the line
+</code></pre>
+
+<h2 id="iii-code-and-output">III. CODE AND OUTPUT</h2>
+
+<h3 id="code-blocks">Code Blocks</h3>
+
+<p>The code blocks should be limited to 65 lines long. Anything longer will cause the Latex files to overflow. This applies for comments as well.</p>
+
+<h3 id="output-blocks">Output Blocks</h3>
+
+<h4 id="images">IMAGES</h4>
+
+<p>The parser is trained to output images encoded as PNGs. Any other format is not supported. Matplotlib already supports PNG images by default. This means that <code>Altair</code> graphs must use an HTML renderer. On Colab notebook, it will require the following code to be run to set up the environment. On any local environment, consult the Altair guide on how to set up Selenium. </p>
+
+<pre><code># SETUP : Allow Altair to Display Charts as PNG
+!pip install selenium
+!apt-get update 
+!apt install chromium-chromedriver
+
+from selenium import webdriver
+chrome_options = webdriver.ChromeOptions()
+chrome_options.add_argument('--headless')
+chrome_options.add_argument('--no-sandbox')
+chrome_options.add_argument('--disable-dev-shm-usage')
+wd = webdriver.Chrome('chromedriver',chrome_options=chrome_options)
+driver =webdriver.Chrome('chromedriver',chrome_options=chrome_options)
+
+import altair as alt
+alt.renderers.enable('png')
+# END SETUP
+</code></pre>
+
+<h4 id="table-output">TABLE OUTPUT</h4>
+
+<p>It is recommended to use <code>print(...)</code> for pandas table output instead of <code>display(...)</code> because <code>print(...)</code> limits the number of rows that it will display. Unfortunately, there is no way to limit the number of lines the pandas data frame will print, however, this behavior can be simulated by how many columns to print and how many lines per column to print with the following code </p>
+
+<pre><code>pd.set_option(&quot;display.max_columns&quot;, 4)
+pd.set_option(&quot;display.max_colwidth&quot;, 15)
+</code></pre>
+
+<h2 id="iv-link-formatting">IV. LINK FORMATTING</h2>
+
+<p>Whenever you are writing a link, it can be represented two ways: inline or as a footnote. </p>
+
+<h3 id="footnote">Footnote</h3>
+
+<p>To make your link a footnote use the markdown link formatter </p>
+
+<p><strong>MARKDOWN</strong></p>
+
+<pre><code>Check out [google](www.google.com)!
+</code></pre>
+
+<p><strong>LATEX</strong></p>
+
+<pre><code>Check out google\footnote{www.google.com} !
+</code></pre>
+
+<h3 id="inline">Inline</h3>
+
+<p>To make your link inline with the text, use ` ` quotation. This is a general rule with this parser, ALWAYS put underscores in ` ` quotations (consult section 5 for more information about what else to put in ` ` quotations). </p>
+
+<h2 id="v-format-requirements-of-mistletoe">V. FORMAT REQUIREMENTS OF <code>Mistletoe</code></h2>
+
+<p><code>Mistletoe</code> is the package that the parser use to translate markdown to raw latex before the parser does further processing. Here are a few do's and don't's when writing Markdown. </p>
+
+<p><strong>DO</strong></p>
+
+<ol>
+<li>DO put all text with an underscore in ` ` quotations (i.e. links)</li>
+<li>DO put all percentages in ` ` quotations</li>
+<li>DO put all weird characters like ~ as <code>$\verb|~|$</code></li>
+</ol>
+
+<p><strong>DON'T</strong> </p>
+
+<ol>
+<li>DON'T nest <code>$...$</code> within <code>$$...$$</code></li>
+<li>DON'T nest formatting (i.e. don't put <code>*...*</code> within <code>**...**</code>)</li>
+<li>DON'T bold/italicize/verbatim texts within a markdown table</li>
+<li>DON'T bold/italicize/verbatim texts within #/##/### (ok to use <code>$...$</code>)</li>
+<li>DON'T use the character <code>#</code> within <code>$...$</code></li>
+<li>DON'T use HTML formatting</li>
+<li>DON'T use markdown links</li>
+</ol>
+
+<h2 id="vi-usage">VI. USAGE</h2>
+
+<p>The python file takes in one config file as input. The config file is a JSON file that is formatted as follows </p>
+
+<pre><code>{
+    &quot;resources&quot;: {
+        &quot;/main.tex&quot;: &quot;http link to the file&quot;, 
+        &quot;/krantz.cls&quot;: &quot;http link to the file&quot;, 
+    },
+    &quot;book_directory&quot;: &quot;./&quot;
+}
+</code></pre>
+
+<h3 id="maintex">main.tex</h3>
+
+<p>The JSON file resources section must include a <code>main.tex</code> section. This is the main launching point for the latex notebook. Within <code>main.tex</code>, there must exists the string <code>&quot;@@@SPLIT@@@&quot;</code> that signifies where you want the compiled latex files to be put. For example. </p>
+
+<p><strong>source main.tex</strong></p>
+
+<pre><code>...
+\usepackage{makeidx}
+\usepackage{multicol}
+\usepackage{graphicx}
+\usepackage{csquotes}
+
+\begin{document}
+@@@SPLIT@@@
+\end{document}
+...
+</code></pre>
+
+<p><strong>compiled main.tex</strong></p>
+
+<pre><code>...
+\usepackage{makeidx}
+\usepackage{multicol}
+\usepackage{graphicx}
+\usepackage{csquotes}
+
+\begin{document}
+\include{01_Data_Ecosystem/out}
+\include{02_Categorical_Data/out}
+\include{03_Quantitative_Data/out}
+\include{05_Regression_Models/out}
+\end{document}
+...
+</code></pre>
+
+<h3 id="other-resources">Other Resources</h3>
+
+<p>The other resources that could be put into the config files include things like format files (<code>klantz.cls</code>) or tex files that <code>main.tex</code> will use. Just provide the name of the file and the http link to it. All resources file will be put at the surface directory of <code>./LatexBook</code>. </p>
+
+<h3 id="input-source">Input Source</h3>
+
+<p>The config file also takes in a key called <code>&quot;book_directory&quot;</code>. This is the directory that the parser will go to to look for the books. This parameter can accept either an absolute path or a relative path. </p>
+
+<h3 id="output">Output</h3>
+
+<p>Once the parser is done running, it will dump all of its compiled output in <code>./LatexBook</code> directory path. In order for overleaf to accept this, you will have to zip all the contents INSIDE of <code>./LatexBook/</code>. Do not include the <code>./LatexBook</code> folder itself, only its content goes into the zip file. This zip file can now be uploaded into overleaf. </p>
+</body>
+</html>
