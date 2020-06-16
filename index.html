@@ -13,7 +13,12 @@
 <li><a href="#markdown-parser-documentation">Markdown Parser Documentation</a>
 
 <ul>
-<li><a href="#i-chapter-layout">I. CHAPTER LAYOUT</a></li>
+<li><a href="#i-book-layout">I. BOOK LAYOUT</a>
+
+<ul>
+<li><a href="#chapter-layout">Chapter Layout</a></li>
+<li><a href="#posting-images">Posting Images</a></li>
+</ul></li>
 <li><a href="#ii-equations">II. EQUATIONS</a>
 
 <ul>
@@ -46,64 +51,80 @@
 <li><a href="#maintex">main.tex</a></li>
 <li><a href="#other-resources">Other Resources</a></li>
 <li><a href="#input-source">Input Source</a></li>
-<li><a href="#output">Output</a></li>
 </ul></li>
+<li><a href="#output">Output</a></li>
 </ul></li>
 </ul></li>
 </ul>
 </div>
 
-<h2 id="i-chapter-layout">I. CHAPTER LAYOUT</h2>
+<h2 id="i-book-layout">I. BOOK LAYOUT</h2>
 
-<p>Markdown header tags gets translated into chapter, section, and subsection tags in HTML. The direct translation rule is as follows </p>
+<h3 id="chapter-layout">Chapter Layout</h3>
 
-<ul>
-<li><code># Chapter 1</code> becomes <code>\chapter{Chapter 1} \label{ch}</code></li>
-<li><code>## Section 1</code> becomes <code>\section{Section 1} \label{ch}</code></li>
-<li><code>### Subsection 1</code> becomes <code>\subsection{Subsection 1} \label{ch}</code></li>
-</ul>
+<p>Markdown header tags gets translated into chapter, section, and subsection tags in HTML. The <code>\label{...}</code> tag is the first word of a space delimited string. </p>
+
+<p>Consider the example string of <code>&quot;Ch.1 A Dream and a Song&quot;</code>. The parser will split this string into two parts base on the first space encountered in the string (<code>&quot;Ch.1&quot;</code> and <code>&quot;A Dream and a Song&quot;</code>). The first part will become the label name and the second part will be the title name. So for this example, the translated version is <code>\chapter{A Dream and a Song} \label{Ch.1}</code>. Here are some extra examples of how the label tag is derived. </p>
+
+<p><strong>MARKDOWN</strong></p>
+
+<pre><code># Ch.1 Hong Kong
+## 1.1 History
+### 1.1.1 British Occupation
+
+## Weird Format
+</code></pre>
+
+<p><strong>LATEX TRANSLATION</strong></p>
+
+<pre><code>\chapter{Hong Kong} \label{Ch.1}
+\section{History} \label{1.1}
+\subsection{British Occupation} \label{1.1.1}
+
+\section{Format} \label{Weird}
+</code></pre>
 
 <p>It is recommended that each chapter only has one <code>#</code> tag and each section has a <code>##</code> tag and each subsection has a <code>###</code> tag. A markdown example is shown below with its latex translation </p>
 
 <p><strong>MARKDOWN</strong></p>
 
-<pre><code># Hong Kong
+<pre><code># Ch.1 Hong Kong
 
-Hong Kong is a metropolitan area and special administrative region of the
-People's Republic of China in the eastern Pearl River Delta by the South China
- Sea.
+Hong Kong is a metropolitan area and special administrative region of the People's Republic of China in the eastern Pearl River Delta by the South China Sea.
 
-## History
+## 1.1 History
 
-The region is first known to have been occupied by humans during the Neolithic
-period, about 6,000 years ago.
+The region is first known to have been occupied by humans during the Neolithic period, about 6,000 years ago.
 
-### British Occupation
+### 1.1.1 British
 
-Hong Kong Island was formally ceded to the United Kingdom in the 1842 Treaty of
-Nanking. The colony was further expanded in 1898, when Britain obtained a
-99-year lease of the New Territories.
+Hong Kong Island was formally ceded to the United Kingdom in the 1842 Treaty of Nanking. The colony was further expanded in 1898, when Britain obtained a 99-year lease of the New Territories.
 
 </code></pre>
 
 <p><strong>LATEX TRANSLATION</strong></p>
 
-<pre><code>\chapter{Hong Kong} \label{ch}
+<pre><code>\chapter{Hong Kong} \label{Ch.1}
 
-Hong Kong is a metropolitan area and special administrative region of the
-People's Republic of China in the eastern Pearl River Delta by the South China
- Sea.
+Hong Kong is a metropolitan area and special administrative region of the People's Republic of China in the eastern Pearl River Delta by the South China Sea.
 
-\section{History} \label{ch}
+\section{History} \label{1.1}
 
-The region is first known to have been occupied by humans during the Neolithic period,
-about 6,000 years ago.
+The region is first known to have been occupied by humans during the Neolithic period, about 6,000 years ago.
 
-\subsection{British Occupation} \label{ch}
+\subsection{British} \label{1.1.1}
 
-Hong Kong Island was formally ceded to the United Kingdom in the 1842 Treaty of
-Nanking. The colony was further expanded in 1898, when Britain obtained a
-99-year lease of the New Territories.
+Hong Kong Island was formally ceded to the United Kingdom in the 1842 Treaty of Nanking. The colony was further expanded in 1898, when Britain obtained a 99-year lease of the New Territories.
+</code></pre>
+
+<h3 id="posting-images">Posting Images</h3>
+
+<p>Images must have an alternative title for the parser to function properly. The parser will rely on the alt-title to name the files that will be generated. The image source can either be an HTTP link or a local file. The alt-titles should have unique titles. </p>
+
+<p><strong>EXAMPLE</strong></p>
+
+<pre><code>![title1](www.linktoimage.com/image1)
+![title2](www.linktoimage.com/image2)
 </code></pre>
 
 <h2 id="ii-equations">II. EQUATIONS</h2>
@@ -137,9 +158,10 @@ y = mx + b
 \label{slope_int_form}\tag{1}
 \end{align}$$
 
-The slope intercept form $\eqref{1}$ defines a line using the slope of the
-line and the y intercept of the line
+The slope intercept form $\eqref{1}$ defines a line using the slope of the line and the y intercept of the line
 </code></pre>
+
+<p><em>Note: Colab Notebooks won't work perfectly with this equation numbering. You will have to refresh the page to make the equation numbering to work correctly. However, if you use Jupiter Lab or Jupiter Notebook, this equation numbering feature will work fine with out refresh.</em></p>
 
 <h2 id="iii-code-and-output">III. CODE AND OUTPUT</h2>
 
@@ -194,12 +216,12 @@ pd.set_option(&quot;display.max_colwidth&quot;, 15)
 
 <p><strong>LATEX</strong></p>
 
-<pre><code>Check out google\footnote{www.google.com} !
+<pre><code>Check out google\footnote{www.google.com}!
 </code></pre>
 
 <h3 id="inline">Inline</h3>
 
-<p>To make your link inline with the text, use ` ` quotation. This is a general rule with this parser, ALWAYS put underscores in ` ` quotations (consult section 5 for more information about what else to put in ` ` quotations). </p>
+<p>To make your link inline with the text, use inline code block quotation (` `). This is a general rule with this parser, ALWAYS put underscores in inline code block quotations (consult section 5 for more information about what else to put in inline block code quotations). </p>
 
 <h2 id="v-format-requirements-of-mistletoe">V. FORMAT REQUIREMENTS OF <code>Mistletoe</code></h2>
 
@@ -207,23 +229,70 @@ pd.set_option(&quot;display.max_colwidth&quot;, 15)
 
 <p><strong>DO</strong></p>
 
-<ol>
-<li>DO put all text with an underscore in ` ` quotations (i.e. links)</li>
+<ul>
+<li>DO put all text with an underscore in inline code block quotations (i.e. links)</li>
+</ul>
+
+<pre><code>Check out this link at `www.somelink.com/sub_link`.
+</code></pre>
+
+<ul>
 <li>DO put all percentages in ` ` quotations</li>
+</ul>
+
+<pre><code>According to a study, `100%` of bald people have no hair.
+</code></pre>
+
+<ul>
 <li>DO put all weird characters like ~ as <code>$\verb|~|$</code></li>
-</ol>
+</ul>
+
+<pre><code>$\verb|~|$ character means negative in the SML language.
+</code></pre>
 
 <p><strong>DON'T</strong> </p>
 
-<ol>
+<ul>
 <li>DON'T nest <code>$...$</code> within <code>$$...$$</code></li>
+</ul>
+
+<pre><code>$$ y = mx + b \text{$m$ is the slope} $$
+</code></pre>
+
+<ul>
 <li>DON'T nest formatting (i.e. don't put <code>*...*</code> within <code>**...**</code>)</li>
+</ul>
+
+<pre><code>Don't **do *this* please**
+</code></pre>
+
+<ul>
 <li>DON'T bold/italicize/verbatim texts within a markdown table</li>
+</ul>
+
+<pre><code>Markdown | Less | Pretty
+--- | --- | ---
+*Still* | `renders` | **nicely**
+1 | 2 | 3
+</code></pre>
+
+<ul>
 <li>DON'T bold/italicize/verbatim texts within #/##/### (ok to use <code>$...$</code>)</li>
+</ul>
+
+<pre><code># This **chapter** is broken
+</code></pre>
+
+<ul>
 <li>DON'T use the character <code>#</code> within <code>$...$</code></li>
+</ul>
+
+<pre><code>$\text{# of things to break}$
+</code></pre>
+
+<ul>
 <li>DON'T use HTML formatting</li>
-<li>DON'T use markdown links</li>
-</ol>
+</ul>
 
 <h2 id="vi-usage">VI. USAGE</h2>
 
@@ -288,7 +357,7 @@ pd.set_option(&quot;display.max_colwidth&quot;, 15)
 
 <p>The config file also takes in a key called <code>&quot;book_directory&quot;</code>. This is the directory that the parser will go to to look for the books. This parameter can accept either an absolute path or a relative path. </p>
 
-<h4 id="output">Output</h4>
+<h3 id="output">Output</h3>
 
 <p>Once the parser is done running, it will dump all of its compiled output in <code>./LatexBook</code> directory path. In order for overleaf to accept this, you will have to zip all the contents INSIDE of <code>./LatexBook/</code>. Do not include the <code>./LatexBook</code> folder itself, only its content goes into the zip file. This zip file can now be uploaded into overleaf. </p>
 </body>
