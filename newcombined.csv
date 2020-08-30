@@ -1,0 +1,5 @@
+﻿name,role,title,department_m_c,phone_number,email,organization
+TEST Student CSV,Student,,History,1234123,test@test.test,Cal Poly
+TEST Staff CSV,Cal Poly Staff,,History,12312312,test@test.test,Cal Poly
+TEST Executive,Executive,CEO,,1231231,test@company.com,Global CIC Summit
+TEST Stakeholders,Stakeholder,Software Engineer,,12312312,test@company.gov,Global CIC Summit
